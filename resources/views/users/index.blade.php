@@ -22,7 +22,7 @@
                     <th class="p-2 border">ID</th>
                     <th class="p-2 border">Name</th>
                     <th class="p-2 border">Email</th>
-                    <th class="p-2 border">Action</th>
+                    <th class="p-2 border"></th>
                 </tr>
             </thead>
             <tbody>
@@ -32,13 +32,20 @@
                         <td class="p-3 border">{{ $user->name }}</td>
                         <td class="p-3 border ">{{ $user->email }}</td>
                         <td class="p-3 border ">
-                            <form method="POST" action="{{ route('users.destroy', $user->id) }}">
+                            <form method="POST" action="{{ route('users.destroy', $user->id) }}" class="inline-flex space-x-2">
                                 @csrf
                                 @method('DELETE')
-                                <a href="{{ route('users.show', $user->id)}}"  class="bg-cyan-400 text-white font-semibold px-4 py-2 rounded-md hover:bg-cyan-500 transition ">Show</a>
-                                <a href="{{ route('users.edit', $user->id)}}"  class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition ">Edit</a>
-                                <button class="bg-red-600 text-white font-semibold px-3 py-1.5 rounded-md hover:bg-red-700 transition">Delete</button>
+                                <a href="{{ route('users.show', $user->id)}}" class="bg-cyan-400 text-white font-semibold px-4 py-2 rounded-md hover:bg-cyan-500 transition">
+                                    Show
+                                </a>
+                                <a href="{{ route('users.edit', $user->id)}}" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                                    Edit
+                                </a>
+                                <button class="bg-red-600 text-white font-semibold px-3 py-1.5 rounded-md hover:bg-red-700 transition">
+                                    Delete
+                                </button>
                             </form>
+                            
                         </td>
                     </tr>
                 @endforeach

@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
+use App\Models\Incident;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\IncidentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,5 +21,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource("users", UserController::class);
+Route::resource("incidents", IncidentController::class);
+
 
 require __DIR__.'/auth.php';
