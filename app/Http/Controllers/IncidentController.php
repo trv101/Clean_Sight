@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Models\Incident;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class IncidentController extends Controller
 {
@@ -69,7 +69,8 @@ class IncidentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $incident = Incident::find($id);
+        return view("incidents.show", compact("incident"));
     }
 
     /**
@@ -86,11 +87,15 @@ class IncidentController extends Controller
      */
     public function update(Request $request, Incident $incident)
     {
-        {   Log::info('Incident update:', [
-            'status' => $request->status,
-            'corrective_action' => $request->corrective_action,
-        ]);
-        
+        {      
+            
+            Log::info('Updating Incident', [
+                'incident_id' => $incident->id,
+                'user_id' => Auth::id(),
+                'status' => $request->status,
+                'corrective_action' => $request->corrective_action,
+            ]);
+            
             $request->validate([
                 'title' => 'required|max:255',
                 'description' => 'required',
@@ -112,7 +117,8 @@ class IncidentController extends Controller
                 'category' => $request->category,
                 'priority' => Incident::calculatePriority($request->impact, $request->urgency), // Recalculate priority
                 'status' => $request->status,
-                'corrective_action' => $request->corrective_action, // You can keep status as is or modify it if needed
+                'corrective_action' => $request->corrective_action,
+                'updated_by_user_id' => Auth::id(), // You can keep status as is or modify it if needed
             ]);
           
     
@@ -125,6 +131,9 @@ class IncidentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $incident = Incident::find($id);
+        $incident->delete();
+
+        return redirect()->route('incidents.index')->with('success', 'Incident Deleted!');
     }
 }

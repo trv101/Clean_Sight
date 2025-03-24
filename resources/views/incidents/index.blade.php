@@ -30,7 +30,8 @@
                     <th class="p-2 border">Assigned Department</th>
                     <th class="p-2 border">Corrective Action</th>
                     <th class="p-2 border">Status</th>
-                    <th class="p-2 border">Last edit</th>
+                    <th class="p-2 border">Last Edit Date</th>
+                    <th class="p-2 border">Last Editor ID</th>
                    
                     <th class="p-2 border"></th>
                 </tr>
@@ -48,7 +49,8 @@
                         <td class="p-3 border ">{{ $incident->assigned_department }}</td>
                         <td class="p-3 border ">{{ $incident->corrective_action }}</td>
                         <td class="p-3 border ">{{ $incident->status}}</td>
-                        <td class="p-3 border ">{{ $incident->updated_at}}</td>
+                        <td class="p-3 border ">{{ $incident->updated_at->format('Y-m-d') }}</td>
+                        <td class="p-3 border">{{ $incident->updated_by_user_id }}</td>
                         <td class="p-3 border">
                             <form method="POST" action="{{ route('incidents.destroy', $incident->id) }}" class="inline-flex space-x-2">
                                 @csrf

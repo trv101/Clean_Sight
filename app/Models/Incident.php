@@ -12,7 +12,7 @@ class Incident extends Model
     protected $fillable = [
         'user_id', 'title', 'description', 'incident_type', 
         'impact', 'urgency', 'priority', 'category', 'status', 
-        'corrective_action', 'assigned_department'
+        'corrective_action', 'assigned_department', 'updated_by_user_id'
     ];
 
     // Relationship: Incident belongs to a User
@@ -32,5 +32,11 @@ class Incident extends Model
 
         return $priorityMatrix[$impact][$urgency] ?? 'Low';
     }
+
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by_user_id');
+    }
+
 }
 
