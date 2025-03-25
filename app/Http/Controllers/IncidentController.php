@@ -12,11 +12,34 @@ class IncidentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // Controller method to sort incidents by priority
+    public function index(Request $request)
     {
-        $incidents = Incident::all() ;
-        return view("incidents.index", compact("incidents"));
+        // Define the priority mapping
+        $priorityMap = [
+            'Low' => 1,
+            'Medium' => 2,
+            'High' => 3,
+        ];
+
+        // Retrieve incidents and sort by priority
+        $incidents = Incident::all();
+
+        // Sort incidents based on the priority using the mapping
+        $incidents = $incidents->sortBy(function ($incident) use ($priorityMap) {
+            return $priorityMap[$incident->priority] ?? 0; // Default to 0 if priority is not found
+        });
+
+        // Optionally, sort in descending order (High priority first)
+        if ($request->get('sort_order') === 'desc') {
+            $incidents = $incidents->sortByDesc(function ($incident) use ($priorityMap) {
+                return $priorityMap[$incident->priority] ?? 0; // Default to 0 if priority is not found
+            });
+        }
+
+        return view('incidents.index', compact('incidents'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -88,14 +111,9 @@ class IncidentController extends Controller
     public function update(Request $request, Incident $incident)
     {
         {      
-            
-            Log::info('Updating Incident', [
-                'incident_id' => $incident->id,
-                'user_id' => Auth::id(),
-                'status' => $request->status,
-                'corrective_action' => $request->corrective_action,
-            ]);
-            
+            $previousStatus = $incident->status;
+            $previousCorrectiveAction = $incident->corrective_action;
+
             $request->validate([
                 'title' => 'required|max:255',
                 'description' => 'required',
@@ -119,6 +137,8 @@ class IncidentController extends Controller
                 'status' => $request->status,
                 'corrective_action' => $request->corrective_action,
                 'updated_by_user_id' => Auth::id(), // You can keep status as is or modify it if needed
+                'last_edit_details' => 'Status changed from ' . $previousStatus . ' to ' . $request->status . 
+                               '. Corrective Action: ' . $previousCorrectiveAction . ' -> ' . $request->corrective_action,
             ]);
           
     

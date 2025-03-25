@@ -16,6 +16,27 @@
         + Report Incident
         </a>
 
+        <div class="my-4 flex justify-end mr-2">
+            <span class="font-semibold">Sort by Priority:</span>
+            <a href="{{ route('incidents.index', ['sort_order' => 'asc']) }}" 
+                class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                  </svg>
+                              
+            </a> 
+        
+            <a href="{{ route('incidents.index', ['sort_order' => 'desc']) }}" 
+                class="text-blue-600 hover:text-blue-800 font-medium px-1 py-1 rounded-md inline-flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                  </svg>
+                  
+                  
+                
+            </a>
+        </div>
+        
         <table class="table-auto w-full border-collapse border border-gray-300 mt-4">
             <thead>
                 <tr class="bg-gray-100">
@@ -45,7 +66,13 @@
                         <td class="p-3 border">{{ $incident->title }}</td>
                         <td class="p-3 border ">{{ $incident->description }}</td>
                         <td class="p-3 border ">{{ $incident->category }}</td>
-                        <td class="p-3 border ">{{ $incident->priority }}</td>
+                        <td class="p-3 border 
+                            @if($incident->priority == 'High') bg-red-500/80
+                            @elseif($incident->priority == 'Medium') bg-orange-500/80
+                            @elseif($incident->priority == 'Low') bg-green-500/80
+                            @endif">
+                            {{ $incident->priority }}
+                        </td>
                         <td class="p-3 border ">{{ $incident->assigned_department }}</td>
                         <td class="p-3 border ">{{ $incident->corrective_action }}</td>
                         <td class="p-3 border ">{{ $incident->status}}</td>
