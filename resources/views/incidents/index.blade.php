@@ -16,7 +16,29 @@
         + Report Incident
         </a>
 
-        <div class="my-4 flex justify-end mr-2">
+        <div class="flex justify-between items-center mt-8 mb-0">
+            <form method="GET" action="{{ route('incidents.index') }}" class="mb-4 flex items-center" id="filterForm">
+                <label class="mr-2 font-semibold">Filter by Status:</label>
+                <label for="open" class="mr-2">
+                    <input type="checkbox" name="status[]" value="Open" {{ in_array('Open', $statuses ?? []) ? 'checked' : '' }}> Open
+                </label>
+                <label for="in_progress" class="mr-2">
+                    <input type="checkbox" name="status[]" value="In Progress" {{ in_array('In Progress', $statuses ?? []) ? 'checked' : '' }}> In Progress
+                </label>
+                <label for="on_hold" class="mr-2">
+                    <input type="checkbox" name="status[]" value="On Hold" {{ in_array('On Hold', $statuses ?? []) ? 'checked' : '' }}> On Hold
+                </label>
+                <label for="resolved" class="mr-2">
+                    <input type="checkbox" name="status[]" value="Resolved" {{ in_array('Resolved', $statuses ?? []) ? 'checked' : '' }}> Resolved
+                </label>
+                <label for="escalated" class="mr-2">
+                    <input type="checkbox" name="status[]" value="Escalated" {{ in_array('Escalated', $statuses ?? []) ? 'checked' : '' }}> Escalated
+                </label>
+                
+            </form>
+        
+
+        <div class="my-4 flex items-center">
             <span class="font-semibold">Sort by Priority:</span>
             <a href="{{ route('incidents.index', ['sort_order' => 'asc']) }}" 
                 class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
@@ -36,8 +58,9 @@
                 
             </a>
         </div>
+    </div>
         
-        <table class="table-auto w-full border-collapse border border-gray-300 mt-4">
+        <table class="table-auto w-full border-collapse border border-gray-300 mt-0">
             <thead>
                 <tr class="bg-gray-100">
                     <th class="p-2 border">ID</th>
@@ -93,4 +116,11 @@
             </tbody>
         </table>
     </div>
+    <script>
+        // Automatically submit the form when a checkbox is clicked
+        const filterForm = document.getElementById('filterForm');
+        filterForm.addEventListener('change', () => {
+            filterForm.submit();
+        });
+    </script>
 @endsection

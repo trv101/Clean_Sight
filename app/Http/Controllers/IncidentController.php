@@ -12,33 +12,41 @@ class IncidentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // Controller method to sort incidents by priority
     public function index(Request $request)
-    {
-        // Define the priority mapping
-        $priorityMap = [
-            'Low' => 1,
-            'Medium' => 2,
-            'High' => 3,
-        ];
+{
+    // Define the priority mapping
+    $priorityMap = [
+        'Low' => 1,
+        'Medium' => 2,
+        'High' => 3,
+    ];
 
-        // Retrieve incidents and sort by priority
-        $incidents = Incident::all();
+    // Get the status filter values from the query parameters (defaults to all if not set)
+    $statuses = $request->input('status', []);
 
-        // Sort incidents based on the priority using the mapping
-        $incidents = $incidents->sortBy(function ($incident) use ($priorityMap) {
-            return $priorityMap[$incident->priority] ?? 0; // Default to 0 if priority is not found
-        });
+    // Start the query for incidents
+    $query = Incident::query();
 
-        // Optionally, sort in descending order (High priority first)
-        if ($request->get('sort_order') === 'desc') {
-            $incidents = $incidents->sortByDesc(function ($incident) use ($priorityMap) {
-                return $priorityMap[$incident->priority] ?? 0; // Default to 0 if priority is not found
-            });
-        }
-
-        return view('incidents.index', compact('incidents'));
+    // Apply the status filter if selected
+    if (!empty($statuses)) {
+        $query->whereIn('status', $statuses);
     }
+
+    // Apply the sorting by priority
+    $sortOrder = $request->get('sort_order');
+    if ($sortOrder) {
+        // Sort incidents by priority before retrieving from the database
+        $query = $query->orderByRaw("FIELD(priority, 'Low', 'Medium', 'High') " . ($sortOrder === 'desc' ? 'DESC' : 'ASC'));
+    }
+
+    // Retrieve the incidents based on the filter and sorting
+    $incidents = $query->get();
+
+    // Return the view with incidents and selected statuses for the form
+    return view('incidents.index', compact('incidents', 'statuses'));
+}
+
+
 
 
     /**
