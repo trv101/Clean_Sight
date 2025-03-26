@@ -11,10 +11,12 @@
             {{ session('success') }}
         </div>
         @endif
+        @can('incident-create')
         <a href="{{ route('incidents.create') }}" 
         class="bg-green-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-700 transition">
         + Report Incident
         </a>
+        @endcan
 
         <div class="flex justify-between items-center mt-8 mb-0">
             <form method="GET" action="{{ route('incidents.index') }}" class="mb-4 flex items-center" id="filterForm">
@@ -105,9 +107,15 @@
                             <form method="POST" action="{{ route('incidents.destroy', $incident->id) }}" class="inline-flex space-x-2">
                                 @csrf
                                 @method('DELETE')
+                                @can('incident-list')
                                 <a href="{{ route('incidents.show', $incident->id)}}" class="bg-cyan-400 text-white font-semibold px-4 py-2 rounded-md hover:bg-cyan-500 transition">Show</a>
+                                @endcan
+                                @can('incident-edit')
                                 <a href="{{ route('incidents.edit', $incident->id)}}" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition">Edit</a>
+                                @endcan
+                                @can('incident-delete')
                                 <button class="bg-red-600 text-white font-semibold px-3 py-1.5 rounded-md hover:bg-red-700 transition">Delete</button>
+                                @endcan
                             </form>
                         </td>
                         

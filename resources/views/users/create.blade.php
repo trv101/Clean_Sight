@@ -4,7 +4,7 @@
     <div class="max-w-xl mx-auto p-6 bg-white shadow rounded mt-8">
         <h1 class="text-2xl font-bold mb-4">Create User</h1>
         <a href="{{ route('users.index') }}" 
-        class="inline-block px-4 py-2 bg-yellow-400 text-black font-semibold rounded-md shadow hover:bg--white transition mb-4">
+        class="bg-cyan-400 text-white font-semibold px-4 py-2 rounded-md hover:bg-cyan-500 transition ">
         Back</a>
         
         <form method="POST" action="{{route('users.store')}}">
@@ -35,7 +35,17 @@
             </div>
 
             <div class="mt-2">
-                <button class="btn btn-success inline-block px-4 py-2 bg-yellow-400 text-black font-semibold rounded-md shadow hover:bg--white transition mb-4"> Submit </button>
+                <label>Roles:</label><br>
+                <select class="form-select" name="roles[]" multiple>
+                    <option>--Select Role--</option>
+                    @foreach ($roles as $role)
+                       <option value="{{ $role->name }}">{{ $role->name }}</option> 
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mt-2">
+                <button class="btn btn-success inline-block px-4 py-2 bg-green-600 text-white font-semibold rounded-md shadow hover:bg-green-700 transition mb-4"> Submit </button>
             </div>
         </form>
         

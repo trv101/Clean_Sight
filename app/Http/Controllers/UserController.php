@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 
 class UserController extends Controller
@@ -23,14 +24,16 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view("users.create");
+        $roles =  Role::all();
+        return view("users.create", compact("roles"));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {   
+       
         $request->validate([
             "name" => "required",
             "email" => "required|email",
@@ -38,11 +41,14 @@ class UserController extends Controller
             
         ]);
 
-        User::create([
+        $user = User::create([
             "name" => $request->name,
             "email" => $request->email,
             "password" => Hash::make($request->password)
         ]);
+
+        $user->syncRoles([$request->roles]);
+
         return redirect()->route('users.index')->with('success', 'User created!');
     
     }
@@ -62,7 +68,9 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::find($id);
-        return view("users.edit", compact("user"));
+        $roles =  Role::all();
+
+        return view("users.edit", compact("user", "roles"));
     }
 
     /**
@@ -73,7 +81,7 @@ class UserController extends Controller
         $request->validate([
             "name" => "required",
             "email" => "required|email",
-            "password" => "required",
+            
         ]);
 
         $user = User::find($id);
@@ -81,6 +89,8 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->save();
+
+        $user->syncRoles([$request->roles]);
 
         return redirect()->route('users.index')->with('success', 'User Updated!');
     }
