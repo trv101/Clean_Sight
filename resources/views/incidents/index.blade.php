@@ -11,12 +11,13 @@
             {{ session('success') }}
         </div>
         @endif
-        @can('incident-create')
-        <a href="{{ route('incidents.create') }}" 
-        class="bg-green-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-700 transition">
-        + Report Incident
-        </a>
-        @endcan
+        
+        <a href="{{ route('incidents.create', ['from_dashboard' => 'false']) }}" 
+            class="bg-green-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-700 transition">
+            + Report Incident
+         </a>
+         
+       
 
         <div class="flex justify-between items-center mt-8 mb-0">
             <form method="GET" action="{{ route('incidents.index') }}" class="mb-4 flex items-center" id="filterForm">

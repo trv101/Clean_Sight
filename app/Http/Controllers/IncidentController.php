@@ -61,8 +61,9 @@ class IncidentController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        {
+    {   
+
+            $from_dashboard = $request->query('from_dashboard');
             $request->validate([
                 'title' => 'required|max:255',
                 'description' => 'required',
@@ -89,12 +90,16 @@ class IncidentController extends Controller
                 'assigned_department' => $request->incident_type === 'IT' ? 'IT' : 'HR',
             ]);
 
-            return redirect()->route('incidents.index')->with('success', 'Incident Reported!');
+           
+            
+            if ($from_dashboard == 'true') {
+                // If from_dashboard is true, redirect to the dashboard
+                return redirect()->route('dashboard')->with('success', 'Incident Reported!');
+            }
         
+            // If from_dashboard is not true, redirect to the incidents index page
+            return redirect()->route('incidents.index')->with('success', 'Incident Reported!');
         }
-    
-    }
-
     /**
      * Display the specified resource.
      */
@@ -145,8 +150,8 @@ class IncidentController extends Controller
                 'status' => $request->status,
                 'corrective_action' => $request->corrective_action,
                 'updated_by_user_id' => Auth::id(), // You can keep status as is or modify it if needed
-                'last_edit_details' => 'Status changed from ' . $previousStatus . ' to ' . $request->status . 
-                               '. Corrective Action: ' . $previousCorrectiveAction . ' -> ' . $request->corrective_action,
+                'last_edit_details' => '<strong>Status changed from ' . $previousStatus . ' to ' . $request->status . '.</strong><br>' .
+                           '<strong>Corrective Action: ' . $previousCorrectiveAction . ' -> ' . $request->corrective_action . '</strong>',
             ]);
           
     
@@ -164,4 +169,14 @@ class IncidentController extends Controller
 
         return redirect()->route('incidents.index')->with('success', 'Incident Deleted!');
     }
+
+    public function dashboard()
+    {
+        // Get the incidents created by the logged-in user
+        $incidents = Incident::where('user_id', auth()->id())->get();
+
+        // Return the dashboard view with the incidents
+        return view('dashboard', compact('incidents'));
+    }
+
 }
