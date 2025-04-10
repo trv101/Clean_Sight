@@ -12,13 +12,19 @@ class Incident extends Model
     protected $fillable = [
         'user_id', 'title', 'description', 'incident_type', 
         'impact', 'urgency', 'priority', 'category', 'status', 
-        'corrective_action', 'assigned_department', 'updated_by_user_id','last_edit_details'
+        'corrective_action', 'assigned_department', 'updated_by_user_id','last_edit_details', 'photo'
     ];
 
-    // Relationship: Incident belongs to a User
+    // Relationship: Incident belongs to a User (creator)
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relationship: Last editor of the incident (updated_by_user_id)
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by_user_id');
     }
 
     // Automatically set priority based on Impact & Urgency
@@ -32,11 +38,4 @@ class Incident extends Model
 
         return $priorityMatrix[$impact][$urgency] ?? 'Low';
     }
-
-    public function updatedByUser()
-    {
-        return $this->belongsTo(User::class, 'updated_by_user_id');
-    }
-
 }
-

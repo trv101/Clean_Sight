@@ -27,11 +27,11 @@
                     <a class="nav-link dropdown-toggle" href="{{route('roles.index')}}">Manage Roles </a>
                 </button>
                 @endcan
-                @if(auth()->user()->hasRole('Admin'))
+                @can('user-list')
                 <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                     <a class="nav-link dropdown-toggle" href="{{route('users.index')}}">Manage Users </a>
                 </button>
-                @endif
+                @endcan
                 @can('incident-list')
                 <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                     <a class="nav-link dropdown-toggle" href="{{route('incidents.index')}}">Manage Incidents </a>

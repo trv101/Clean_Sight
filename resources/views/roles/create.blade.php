@@ -3,7 +3,7 @@
 @section('content')
     <div class="max-w-3xl mx-auto p-6 bg-white shadow rounded mt-8">
         <h1 class="text-2xl font-bold mb-4">Create Role</h1>
-        <a href="{{ route('users.index') }}" 
+        <a href="{{ route('roles.index') }}" 
         class="bg-cyan-400 text-white font-semibold px-4 py-2 rounded-md hover:bg-cyan-500 transition ">
         Back</a>
         

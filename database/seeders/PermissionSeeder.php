@@ -13,7 +13,12 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions =[
+        $permissions = [
+            "user-list",
+            "user-create",
+            "user-edit",
+            "user-delete",
+
             "role-list",
             "role-create",
             "role-edit",
@@ -25,9 +30,11 @@ class PermissionSeeder extends Seeder
             "incident-delete"
         ];
 
-        foreach ($permissions as $key => $permission) {
-            Permission::create(['name' => $permission]);
+        foreach ($permissions as $permission) {
+            // Check if the permission already exists
+            if (!Permission::where('name', $permission)->exists()) {
+                Permission::create(['name' => $permission]);
+            }
         }
-
     }
 }
