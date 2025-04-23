@@ -91,8 +91,8 @@
 
         <!-- Picture Upload (New Field) -->
         <div>
-            <label for="image" class="block text-sm font-medium text-gray-700">Upload Picture (Optional)</label>
-            <input type="file" name="image" id="image" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+            <label for="photo" class="block text-sm font-medium text-gray-700">Upload Picture (Optional)</label>
+            <input type="file" name="photo" id="photo" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
         </div>
 
         <!-- Submit Button -->
@@ -139,7 +139,7 @@
             categorySelect.innerHTML = `
                 <option value="Behavioral">Behavioral</option>
                 <option value="Harassment/Conflict">Harassment/Conflict</option>
-                <option value="Other">Other</option>
+                <option value="Other Staff">Other</option>
             `;
         }
     }

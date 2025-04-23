@@ -21,6 +21,14 @@
                 <p><strong class="font-semibold">Urgency:</strong> {{ $incident->urgency }}</p>
             </div>
 
+            <!-- Display Image if Available -->
+            @if($incident->photo)
+                <div class="bg-gray-50 p-4 rounded-md shadow-sm">
+                    <h2 class="text-lg font-medium text-gray-700 mb-4">Incident Image</h2>
+                    <img src="{{ asset($incident->photo) }}" alt="Incident Image" class="w-full max-w-md mx-auto rounded-md shadow-sm">
+                </div>
+            @endif
+
             <!-- Status and Priority Information -->
             <div class="bg-gray-50 p-4 rounded-md shadow-sm">
                 <h2 class="text-lg font-medium text-gray-700 mb-4">Status & Priority</h2>
@@ -53,7 +61,7 @@
             @if($incident->last_edit_details)
                 <div class="bg-gray-50 p-4 rounded-md shadow-sm mt-4">
                     <h2 class="text-lg font-medium text-gray-700 mb-4">Last Edit Details</h2>
-                    <p><strong class="font-semibold">Last Edit:</strong> {{ $incident->last_edit_details }}</p>
+                    <p><strong class="font-semibold">Last Edit:</strong> {!! $incident->last_edit_details !!}</p>
                 </div>
             @endif
         </div>

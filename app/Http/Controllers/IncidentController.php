@@ -44,44 +44,53 @@ class IncidentController extends Controller
      */
     public function store(Request $request)
     {   
+        // Get 'from_dashboard' value from query string (if exists)
         $from_dashboard = $request->query('from_dashboard');
+
+        // Validate incoming request data
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'incident_type' => 'required|in:Equipment Issues,Safety Hazards,Workplace Injuries,...',
+            'incident_type' => 'required|in:Cleaning,Safety,Equipment,Staff',
             'impact' => 'required|in:Low,Medium,High',
             'urgency' => 'required|in:Low,Medium,High',
             'category' => 'required',
-            'photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Image validation
+            'photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Image validation (optional)
         ]);
-    
-        // Calculate priority before saving
+
+        // Calculate priority based on impact and urgency
         $priority = Incident::calculatePriority($request->impact, $request->urgency);
-    
+
         // Prepare data for new incident
         $incidentData = $request->only(['title', 'description', 'incident_type', 'impact', 'urgency', 'category', 'assigned_department']);
-    
-        // Handle image upload
+        
+        // Initialize path and filename
+        $path = '';
+        $filename = '';
+
+        // Handle image upload if present
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('incident_photos', 'public');
-            $incidentData['photo'] = $photoPath;
+            $file = $request->file('photo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '.' . $extension;
+            $path = 'uploads/incident/';
+            $file->move(public_path($path), $filename);
         }
 
         // Create the new incident
         Incident::create([
             'user_id' => Auth::id(),
-            'priority' => $priority, 
+            'priority' => $priority,
             'status' => 'Open',
-            'photo' => $incidentData['photo'] ?? null, // Store photo path if it exists
-            ...$incidentData,
+            'photo' => $path . $filename, // Store the photo path if it exists
+            ...$incidentData, // Merge the incident data
         ]);
-            
+
+        // Redirect based on whether the request came from the dashboard or not
         if ($from_dashboard == 'true') {
-            // If from_dashboard is true, redirect to the dashboard
             return redirect()->route('dashboard')->with('success', 'Incident Reported!');
         }
-        
-        // If from_dashboard is not true, redirect to the incidents index page
+
         return redirect()->route('incidents.index')->with('success', 'Incident Reported!');
     }
 
@@ -90,7 +99,14 @@ class IncidentController extends Controller
      */
     public function show(string $id)
     {
+        // Find the incident by its ID
         $incident = Incident::find($id);
+
+        // Check if incident exists
+        if (!$incident) {
+            return redirect()->route('incidents.index')->with('error', 'Incident not found.');
+        }
+
         return view("incidents.show", compact("incident"));
     }
 
@@ -99,7 +115,14 @@ class IncidentController extends Controller
      */
     public function edit(string $id)
     {
+        // Find the incident by its ID for editing
         $incident = Incident::find($id);
+
+        // Check if incident exists
+        if (!$incident) {
+            return redirect()->route('incidents.index')->with('error', 'Incident not found.');
+        }
+
         return view("incidents.edit", compact("incident"));
     }
 
@@ -108,33 +131,42 @@ class IncidentController extends Controller
      */
     public function update(Request $request, Incident $incident)
     {      
+        // Store previous values for comparison in last_edit_details
         $previousStatus = $incident->status;
         $previousCorrectiveAction = $incident->corrective_action;
 
+        // Validate incoming request data for editing
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'incident_type' => 'required|in:Equipment Issues,Safety Hazards,Workplace Injuries,...',
+            'incident_type' => 'required|in:Cleaning,Safety,Equipment,Staff',
             'impact' => 'required|in:Low,Medium,High',
             'urgency' => 'required|in:Low,Medium,High',
             'category' => 'required',
             'status' => 'required|in:Open,In Progress,Resolved,On Hold,Escalated',
             'corrective_action' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Image validation
+            'photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Image validation (optional)
         ]);
 
-        // Handle image upload
+        // Handle image upload for the edit
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
-            if ($incident->photo && file_exists(storage_path('app/public/'.$incident->photo))) {
-                unlink(storage_path('app/public/'.$incident->photo));
+            if ($incident->photo && file_exists(public_path($incident->photo))) {
+                unlink(public_path($incident->photo));
             }
 
-            $photoPath = $request->file('photo')->store('incident_photos', 'public');
-            $incident->photo = $photoPath;
+            // Store the new photo
+            $file = $request->file('photo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '.' . $extension;
+            $path = 'uploads/incident/';
+            $file->move(public_path($path), $filename);
+
+            // Save the new photo path
+            $incident->photo = $path . $filename;
         }
 
-        // Update incident with new data
+        // Update the incident with new data
         $incident->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -158,16 +190,26 @@ class IncidentController extends Controller
      */
     public function destroy(string $id)
     {
+        // Find the incident and delete its photo if it exists
         $incident = Incident::find($id);
-        // Delete the photo if exists
-        if ($incident->photo && file_exists(storage_path('app/public/'.$incident->photo))) {
-            unlink(storage_path('app/public/'.$incident->photo));
+
+        if ($incident) {
+            // Check if photo exists and delete it
+            if ($incident->photo && file_exists(public_path($incident->photo))) {
+                // File::delete($incident->photo);
+                unlink(public_path($incident->photo));
+            }
+
+            // Delete the incident record from the database
+            $incident->delete();
         }
-        $incident->delete();
 
         return redirect()->route('incidents.index')->with('success', 'Incident Deleted!');
     }
 
+    /**
+     * Display the dashboard for incidents created by the logged-in user.
+     */
     public function dashboard()
     {
         // Get the incidents created by the logged-in user

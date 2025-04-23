@@ -12,7 +12,7 @@ class Incident extends Model
     protected $fillable = [
         'user_id', 'title', 'description', 'incident_type', 
         'impact', 'urgency', 'priority', 'category', 'status', 
-        'corrective_action', 'assigned_department', 'updated_by_user_id','last_edit_details', 'photo'
+        'corrective_action', 'assigned_department','photo', 'updated_by_user_id','last_edit_details'
     ];
 
     // Relationship: Incident belongs to a User (creator)

@@ -42,8 +42,7 @@
             <a href="{{ route('incidents.create', ['from_dashboard' => 'true']) }}" 
                 class="bg-green-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-700 transition">
                 + Report Incident
-             </a>
-             
+            </a>
 
             <h1 class="text-2xl font-bold mt-4 mb-4">Your Incidents</h1>
 
@@ -56,7 +55,7 @@
                         <th class="p-2 border">Priority</th>
                         <th class="p-2 border">Status</th>
                         <th class="p-2 border">Reported Date</th>
-                       
+                        <th class="p-2 border">Photo</th> <!-- Added Photo Column -->
                     </tr>
                 </thead>
                 <tbody>
@@ -81,7 +80,16 @@
                                 @endif">
                                 {{ $incident->status }}
                             </td>
+                            <!-- Photo Column -->
+                            <td class="p-3 border">
+                                @if($incident->photo)
+                                    <img src="{{ asset($incident->photo) }}" alt="Incident Photo" class="w-16 h-16 object-cover rounded-md">
+                                @else
+                                    <p>No image</p>
+                                @endif
+                            </td>
                             <td class="p-3 border">{{ $incident->created_at->format('Y-m-d') }}</td>
+
                             
                         </tr>
                     @endforeach
