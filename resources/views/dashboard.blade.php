@@ -81,9 +81,14 @@
                                 {{ $incident->status }}
                             </td>
                             <!-- Centered Photo Column -->
-                            <td class="p-3 border flex justify-center">
+                            <td class="p-3 border flex justify-center items-center">
                                 @if($incident->photo)
-                                    <img src="{{ asset($incident->photo) }}" alt="Incident Photo" class="w-16 h-16 object-cover rounded-md">
+                                    <img 
+                                        src="{{ asset($incident->photo) }}" 
+                                        alt="Incident Photo" 
+                                        class="w-16 h-16 object-cover rounded-md cursor-pointer transition-transform duration-200 hover:scale-125"
+                                        onclick="showImageModal('{{ asset($incident->photo) }}')"
+                                    >
                                 @else
                                     <p>No image</p>
                                 @endif
@@ -96,4 +101,23 @@
         </div>
     </div>
 </div>
+
+    <!-- Full Image Modal -->
+    <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-70 flex items-center justify-center">
+        <div class="relative max-w-3xl w-full">
+            <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white text-3xl font-bold">&times;</button>
+            <img id="modalImage" src="" alt="Full Image" class="max-w-full max-h-[90vh] mx-auto rounded shadow-lg">
+        </div>
+    </div>
+
+    <script>
+        function showImageModal(src) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+    </script>
 @endsection

@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <table class="table-auto w-full border-collapse border border-gray-300 mt-0">
+    <table class="table-auto w-full border-collapse border border-gray-300 mt-0 text-center">
         <thead>
             <tr class="bg-gray-100">
                 <th class="p-2 border">ID</th>
@@ -99,11 +99,17 @@
                     </td>
                     <td class="p-3 border">{{ $incident->updated_at->format('Y-m-d') }}</td>
                     <td class="p-3 border">{{ $incident->updatedByUser ? $incident->updatedByUser->name : 'N/A' }}</td>
-                    <td class="p-3 border">
+                    <!-- Centered Photo Column -->
+                    <td class="p-3 border flex justify-center items-center">
                         @if($incident->photo)
-                            <img src="{{ asset($incident->photo) }}" alt="Incident Photo" class="w-20 h-20 object-cover rounded-md">
+                            <img 
+                                src="{{ asset($incident->photo) }}" 
+                                alt="Incident Photo" 
+                                class="w-16 h-16 object-cover rounded-md cursor-pointer transition-transform duration-200 hover:scale-125"
+                                onclick="showImageModal('{{ asset($incident->photo) }}')"
+                            >
                         @else
-                            No Image
+                            <p>No image</p>
                         @endif
                     </td>
                     <td class="p-3 border">
@@ -126,6 +132,13 @@
         </tbody>
     </table>
 </div>
+<!-- Full Image Modal -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-70 flex items-center justify-center">
+    <div class="relative max-w-3xl w-full">
+        <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white text-3xl font-bold">&times;</button>
+        <img id="modalImage" src="" alt="Full Image" class="max-w-full max-h-[90vh] mx-auto rounded shadow-lg">
+    </div>
+</div>
 
 <script>
     // Automatically submit the form when a checkbox is clicked
@@ -133,5 +146,14 @@
     filterForm.addEventListener('change', () => {
         filterForm.submit();
     });
+
+    function showImageModal(src) {
+        document.getElementById('modalImage').src = src;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
+
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+    }
 </script>
 @endsection
