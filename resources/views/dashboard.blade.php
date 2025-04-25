@@ -46,7 +46,7 @@
 
             <h1 class="text-2xl font-bold mt-4 mb-4">Your Incidents</h1>
 
-            <table class="table-auto w-full border-collapse border border-gray-300 mt-4">
+            <table class="table-auto w-full border-collapse border border-gray-300 mt-4 text-center">
                 <thead>
                     <tr class="bg-gray-100">
                         <th class="p-2 border">ID</th>
@@ -54,24 +54,24 @@
                         <th class="p-2 border">Category</th>
                         <th class="p-2 border">Priority</th>
                         <th class="p-2 border">Status</th>
-                        <th class="p-2 border">Reported Date</th>
-                        <th class="p-2 border">Photo</th> <!-- Added Photo Column -->
+                        <th class="p-2 border">Photo</th>
+                        <th class="p-2 border">Reported Date</th> 
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($incidents as $incident)
                         <tr class="hover:bg-gray-50">
-                            <td class="p-3 border">{{ $incident->id }}</td>
-                            <td class="p-3 border">{{ $incident->title }}</td>
-                            <td class="p-3 border">{{ $incident->category }}</td>
-                            <td class="p-3 border 
+                            <td class="p-3 border text-center">{{ $incident->id }}</td>
+                            <td class="p-3 border text-center">{{ $incident->title }}</td>
+                            <td class="p-3 border text-center">{{ $incident->category }}</td>
+                            <td class="p-3 border text-center 
                                 @if($incident->priority == 'High') bg-red-500/80
                                 @elseif($incident->priority == 'Medium') bg-orange-500/80
                                 @elseif($incident->priority == 'Low') bg-green-500/80
                                 @endif">
                                 {{ $incident->priority }}
                             </td>
-                            <td class="p-3 border 
+                            <td class="p-3 border text-center
                                 @if($incident->status == 'Resolved') bg-green-500/80
                                 @elseif($incident->status == 'In Progress') bg-yellow-500/80
                                 @elseif($incident->status == 'On Hold') bg-purple-500/80
@@ -80,17 +80,15 @@
                                 @endif">
                                 {{ $incident->status }}
                             </td>
-                            <!-- Photo Column -->
-                            <td class="p-3 border">
+                            <!-- Centered Photo Column -->
+                            <td class="p-3 border flex justify-center">
                                 @if($incident->photo)
                                     <img src="{{ asset($incident->photo) }}" alt="Incident Photo" class="w-16 h-16 object-cover rounded-md">
                                 @else
                                     <p>No image</p>
                                 @endif
                             </td>
-                            <td class="p-3 border">{{ $incident->created_at->format('Y-m-d') }}</td>
-
-                            
+                            <td class="p-3 border text-center">{{ $incident->created_at->format('Y-m-d') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
