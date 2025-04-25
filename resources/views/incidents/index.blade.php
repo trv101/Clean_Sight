@@ -50,6 +50,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
                 </svg>
             </a>
+
+            <a href="{{ route('incidents.index') }}" 
+                class= text-gray-300 font-semibold text-sm px-1 py-0.5 rounded-md hover:bg-gray-500 transition">
+                Reset
+            </a>
         </div>
     </div>
 

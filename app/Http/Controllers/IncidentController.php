@@ -11,25 +11,32 @@ class IncidentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        // Get the status filter values from the query parameters (defaults to all if not set)
-        $statuses = $request->input('status', []);
-
-        // Start the query for incidents
-        $query = Incident::query();
-
-        // Apply the status filter if selected
-        if (!empty($statuses)) {
-            $query->whereIn('status', $statuses);
-        }
-
-        // Retrieve incidents, eager load the updatedByUser relationship
-        $incidents = $query->with('updatedByUser')->get();
-
-        // Return the view with incidents and selected statuses for the form
-        return view('incidents.index', compact('incidents', 'statuses'));
-    }
+    
+     public function index(Request $request)
+     {
+         // Get the status filter values from the query parameters (defaults to all if not set)
+         $statuses = $request->input('status', []);
+     
+         // Start the query for incidents
+         $query = Incident::query();
+     
+         // Apply the status filter if selected
+         if (!empty($statuses)) {
+             $query->whereIn('status', $statuses);
+         }
+     
+         // Apply sorting if specified in the query parameters, otherwise no sorting
+         if ($request->has('sort_order')) {
+             $sortOrder = $request->input('sort_order');
+             $query->orderBy('priority', $sortOrder);
+         }
+     
+         // Retrieve incidents, eager load the updatedByUser relationship
+         $incidents = $query->with('updatedByUser')->get();
+     
+         // Return the view with incidents and selected statuses for the form
+         return view('incidents.index', compact('incidents', 'statuses'));
+     }
 
     /**
      * Show the form for creating a new resource.
