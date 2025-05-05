@@ -25,10 +25,22 @@ class IncidentController extends Controller
              $query->whereIn('status', $statuses);
          }
      
-         // Apply sorting if specified in the query parameters, otherwise no sorting
-         if ($request->has('sort_order')) {
-             $sortOrder = $request->input('sort_order');
-             $query->orderBy('priority', $sortOrder);
+         // Get the sort parameters (if any)
+         $sortBy = $request->input('sort_by', 'created_at'); // Default sorting by created_at
+         $sortOrder = $request->input('sort_order', 'asc'); // Default sorting in ascending order
+     
+         // Apply sorting logic
+         if ($request->has('sort_by') && $request->has('sort_order')) {
+             // If sorting by 'status', apply custom order using FIELD() in SQL
+             if ($sortBy === 'status') {
+                 $query->orderByRaw("FIELD(status, 'Open', 'In Progress', 'Resolved', 'On Hold', 'Escalated') $sortOrder");
+             } elseif ($sortBy === 'priority') {
+                 // Manually order priorities: Low, Medium, High
+                 $query->orderByRaw("FIELD(priority, 'Low', 'Medium', 'High') $sortOrder");
+             } else {
+                 // For other columns, apply default sorting
+                 $query->orderBy($sortBy, $sortOrder);
+             }
          }
      
          // Retrieve incidents, eager load the updatedByUser relationship
@@ -37,6 +49,9 @@ class IncidentController extends Controller
          // Return the view with incidents and selected statuses for the form
          return view('incidents.index', compact('incidents', 'statuses'));
      }
+     
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -50,56 +65,79 @@ class IncidentController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {   
-        // Get 'from_dashboard' value from query string (if exists)
-        $from_dashboard = $request->query('from_dashboard');
+{
+    // Get 'from_dashboard' value from query string (if exists)
+    $from_dashboard = $request->query('from_dashboard');
+    
+    // Default the assigned department to an empty string
+    $assignedDepartment = '';
 
-        // Validate incoming request data
-        $request->validate([
-            'title' => 'required|max:255',
-            'description' => 'required',
-            'incident_type' => 'required|in:Cleaning,Safety,Equipment,Staff',
-            'impact' => 'required|in:Low,Medium,High',
-            'urgency' => 'required|in:Low,Medium,High',
-            'category' => 'required',
-            'photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Image validation (optional)
-        ]);
-
-        // Calculate priority based on impact and urgency
-        $priority = Incident::calculatePriority($request->impact, $request->urgency);
-
-        // Prepare data for new incident
-        $incidentData = $request->only(['title', 'description', 'incident_type', 'impact', 'urgency', 'category', 'assigned_department']);
-        
-        // Initialize path and filename
-        $path = '';
-        $filename = '';
-
-        // Handle image upload if present
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '.' . $extension;
-            $path = 'uploads/incident/';
-            $file->move(public_path($path), $filename);
-        }
-
-        // Create the new incident
-        Incident::create([
-            'user_id' => Auth::id(),
-            'priority' => $priority,
-            'status' => 'Open',
-            'photo' => $path . $filename, // Store the photo path if it exists
-            ...$incidentData, // Merge the incident data
-        ]);
-
-        // Redirect based on whether the request came from the dashboard or not
-        if ($from_dashboard == 'true') {
-            return redirect()->route('dashboard')->with('success', 'Incident Reported!');
-        }
-
-        return redirect()->route('incidents.index')->with('success', 'Incident Reported!');
+    // Set the assigned department based on incident type
+    switch ($request->incident_type) {
+        case 'Electrical maintenance':
+            $assignedDepartment = 'Electrical';
+            break;
+        case 'Plumbing maintenance':
+            $assignedDepartment = 'Plumbing';
+            break;
+        case 'Garden Maintenance':
+            $assignedDepartment = 'Gardening';
+            break;
+        case 'Cleaning Maintenance':
+            $assignedDepartment = 'Cleaning';
+            break;
+        case 'Other':
+            $assignedDepartment = 'General';
+            break;
     }
+
+    // Validate incoming request data (excluding assigned_department)
+    $request->validate([
+        'title' => 'required|max:255',
+        'description' => 'required',
+        'incident_type' => 'required|in:Electrical maintenance,Plumbing maintenance,Garden Maintenance,Cleaning Maintenance,Other',
+        'impact' => 'required|in:Low,Medium,High',
+        'urgency' => 'required|in:Low,Medium,High',
+        'category' => 'required',
+        'photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Image validation (optional)
+    ]);
+
+    // Calculate priority based on impact and urgency
+    $priority = Incident::calculatePriority($request->impact, $request->urgency);
+
+    // Prepare data for new incident
+    $incidentData = $request->only(['title', 'description', 'incident_type', 'impact', 'urgency', 'category']);
+
+    // Add the assigned department to the incident data
+    $incidentData['assigned_department'] = $assignedDepartment;
+
+    // Handle image upload if present
+    $path = '';
+    $filename = '';
+    if ($request->hasFile('photo')) {
+        $file = $request->file('photo');
+        $extension = $file->getClientOriginalExtension();
+        $filename = time() . '.' . $extension;
+        $path = 'uploads/incident/';
+        $file->move(public_path($path), $filename);
+    }
+
+    // Create the new incident
+    Incident::create([
+        'user_id' => Auth::id(),
+        'priority' => $priority,
+        'status' => 'Open',
+        'photo' => $path . $filename, // Store the photo path if it exists
+        ...$incidentData, // Merge the incident data with the assigned department
+    ]);
+
+    // Redirect based on whether the request came from the dashboard or not
+    if ($from_dashboard == 'true') {
+        return redirect()->route('dashboard')->with('success', 'Incident Reported!');
+    }
+
+    return redirect()->route('incidents.index')->with('success', 'Incident Reported!');
+}
 
     /**
      * Display the specified resource.
@@ -146,7 +184,7 @@ class IncidentController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'incident_type' => 'required|in:Cleaning,Safety,Equipment,Staff',
+            'incident_type' => 'required|in:Electrical maintenance,Plumbing maintenance,Garden Maintenance,Cleaning Maintenance,Other',
             'impact' => 'required|in:Low,Medium,High',
             'urgency' => 'required|in:Low,Medium,High',
             'category' => 'required',

@@ -36,7 +36,7 @@
         </form>
         
         <div class="my-4 flex items-center">
-            <span class="font-semibold">Sort by Priority:</span>
+            {{-- <span class="font-semibold">Sort by Priority:</span>
             <a href="{{ route('incidents.index', ['sort_order' => 'asc']) }}" 
                 class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -49,10 +49,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
                 </svg>
-            </a>
+            </a> --}}
 
             <a href="{{ route('incidents.index') }}" 
-                class= text-gray-300 font-semibold text-sm px-1 py-0.5 rounded-md hover:bg-gray-500 transition">
+                class= text-gray-300 font-semibold text-sm px-1 py-0.5++ rounded-md hover:bg-gray-500 transition">
                 Reset
             </a>
         </div>
@@ -61,14 +61,69 @@
     <table class="table-auto w-full border-collapse border border-gray-300 mt-0 text-center">
         <thead>
             <tr class="bg-gray-100">
-                <th class="p-2 border">ID</th>
-                <th class="p-2 border">Reported Date</th>
+                <th class="p-2 border">ID
+                    <a href="{{ route('incidents.index', ['sort_order' => 'asc', 'sort_by' => 'created_at']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                        </svg>
+                    </a>
+                    <a href="{{ route('incidents.index', ['sort_order' => 'desc', 'sort_by' => 'created_at']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-1 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                        </svg>
+                    </a>
+                </th>
+                <th class="p-2 border">Reported Date
+                    <a href="{{ route('incidents.index', ['sort_order' => 'asc', 'sort_by' => 'created_at']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                        </svg>
+                    </a>
+                    <a href="{{ route('incidents.index', ['sort_order' => 'desc', 'sort_by' => 'created_at']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-1 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                        </svg>
+                    </a>
+                </th>
+                
                 <th class="p-2 border">Title</th>
                 <th class="p-2 border">Category</th>
-                <th class="p-2 border">Priority</th>
+                <th class="p-2 border">Priority
+                    <a href="{{ route('incidents.index', ['sort_by' => 'priority', 'sort_order' => 'asc']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                        </svg>
+                    </a>
+                    <a href="{{ route('incidents.index', ['sort_by' => 'priority', 'sort_order' => 'desc']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-1 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                        </svg>
+                    </a>
+                </th>
+                
                 <th class="p-2 border">Assigned Department</th>
                 <th class="p-2 border">Corrective Action</th>
-                <th class="p-2 border">Status</th>
+                <th class="p-2 border">Status
+                    <a href="{{ route('incidents.index', ['sort_order' => 'asc', 'sort_by' => 'status']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                        </svg>
+                    </a>
+                    <a href="{{ route('incidents.index', ['sort_order' => 'desc', 'sort_by' => 'status']) }}" 
+                        class="text-blue-600 hover:text-blue-800 font-medium px-1 py-1 rounded-md inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                        </svg>
+                    </a>
+                </th>
+                
                 <th class="p-2 border">Last Edit Date</th>
                 <th class="p-2 border">Last Editor</th>
                 <th class="p-2 border">Photo</th>
@@ -83,9 +138,9 @@
                     <td class="p-3 border">{{ $incident->title }}</td>
                     <td class="p-3 border">{{ $incident->category }}</td>
                     <td class="p-3 border 
-                        @if($incident->priority == 'High') bg-red-500/80
-                        @elseif($incident->priority == 'Medium') bg-orange-500/80
-                        @elseif($incident->priority == 'Low') bg-green-500/80
+                        @if($incident->priority == 'High') bg-red-200
+                        @elseif($incident->priority == 'Medium') bg-orange-200
+                        @elseif($incident->priority == 'Low') bg-green-200
                         @endif">
                         {{ $incident->priority }}
                     </td>
@@ -93,11 +148,11 @@
                     <td class="p-3 border">{{ $incident->corrective_action }}</td>
                     
                     <td class="p-3 border
-                            @if($incident->status == 'Resolved') bg-green-500/80
-                            @elseif($incident->status == 'In Progress') bg-yellow-500/80
-                            @elseif($incident->status == 'On Hold') bg-purple-500/80
-                            @elseif($incident->status == 'Escalated') bg-red-500/80
-                            @elseif($incident->status == 'Open') bg-blue-500/80
+                            @if($incident->status == 'Resolved') bg-green-500/30
+                            @elseif($incident->status == 'In Progress') bg-yellow-500/30
+                            @elseif($incident->status == 'On Hold') bg-purple-500/30
+                            @elseif($incident->status == 'Escalated') bg-red-500/30
+                            @elseif($incident->status == 'Open') bg-blue-500/30
                             @endif">
                             {{ $incident->status }}
                         

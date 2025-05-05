@@ -2,19 +2,13 @@
 
 @section('content')
 <div class="max-w-xl mx-auto p-6 bg-white shadow rounded mt-8">
-    <!-- Back Button with Conditional Redirect -->
-    @if(request()->query('from_dashboard') == 'true')
-        <a href="{{ route('dashboard') }}" 
-           class="inline-block px-4 py-2 bg-cyan-400 text-white font-semibold rounded-md shadow hover:bg-cyan-500 transition mb-4">
-            Back
-        </a>
-    @else
-        <a href="{{ route('incidents.index') }}" 
-           class="inline-block px-4 py-2 bg-cyan-400 text-white font-semibold rounded-md shadow hover:bg-cyan-500 transition mb-4">
-            Back
-        </a>
-    @endif
-    
+
+    <!-- Back Button to Previous Page -->
+    <a href="javascript:history.back()" 
+       class="inline-block px-4 py-2 bg-cyan-400 text-white font-semibold rounded-md shadow hover:bg-cyan-500 transition mb-4">
+       Back
+    </a>
+
     @if ($errors->any())
     <div class="bg-red-100 text-red-800 p-4 rounded-lg mb-4">
         <ul>
@@ -40,14 +34,15 @@
             <textarea name="description" id="description" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm" required></textarea>
         </div>
 
-        <!-- Incident Type (Cleaning Incident) -->
+        <!-- Incident Type (Maintenance) -->
         <div>
             <label for="incident_type" class="block text-sm font-medium text-gray-700">Incident Type</label>
             <select name="incident_type" id="incident_type" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm" onchange="toggleCategories()">
-                <option value="Cleaning">Cleaning</option>
-                <option value="Safety">Safety</option>
-                <option value="Equipment">Equipment</option>
-                <option value="Staff">Staff</option>
+                <option value="Electrical maintenance">Electrical maintenance</option>
+                <option value="Plumbing maintenance">Plumbing maintenance</option>
+                <option value="Garden Maintenance">Garden Maintenance</option>
+                <option value="Cleaning Maintenance">Cleaning Maintenance</option>
+                <option value="Other">Other</option>
             </select>
         </div>
 
@@ -55,11 +50,7 @@
         <div>
             <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
             <select name="category" id="category" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm" disabled>
-                <!-- Default Cleaning Categories -->
-                <option value="Spillage">Spillage</option>
-                <option value="Trash Overflow">Trash Overflow</option>
-                <option value="Cleaning Supplies Issue">Cleaning Supplies Issue</option>
-                <option value="Other Cleaning">Other</option>
+                <!-- Default categories will be dynamically populated based on Incident Type -->
             </select>
         </div>
 
@@ -89,10 +80,10 @@
         <!-- Status (Default: Open) -->
         <input type="hidden" name="status" value="Open">
 
-        <!-- Picture Upload (New Field) -->
+        <!-- Picture Upload -->
         <div>
             <label for="photo" class="block text-sm font-medium text-gray-700">Upload Picture (Optional)</label>
-            <input type="file" name="photo" id="photo" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+            <input type="file" name="photo[]" id="photo" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm" multiple>
         </div>
 
         <!-- Submit Button -->
@@ -107,39 +98,44 @@
         var type = document.getElementById("incident_type").value;
         var categorySelect = document.getElementById("category");
 
-        // Disable the category select if no type is selected
+        // Enable the category select if a type is selected
         categorySelect.disabled = false;
 
         // Clear existing options
         categorySelect.innerHTML = '';
 
         // Dynamically populate categories based on incident type
-        if (type === "Cleaning") {
+        if (type === "Electrical maintenance") {
             categorySelect.innerHTML = `
-                <option value="Spillage">Spillage</option>
+                <option value="General repairs">General repairs</option>
+                <option value="Power Outages">Power Outages</option>
+                <option value="AC/Fan Issues">AC/Fan Issues</option>
+                <option value="Lighting Problems">Lighting Problems</option>
+                <option value="Electrical Other">Other</option>
+            `;
+        } else if (type === "Plumbing maintenance") {
+            categorySelect.innerHTML = `
+                <option value="Leaking Pipes">Leaking Pipes</option>
+                <option value="Clogged Drains">Clogged Drains</option>
+                <option value="Water Pressure">Water Pressure</option>
+                <option value="Broken Faucets/Toilets">Broken Faucets/Toilets</option>
+                <option value="Plumbing Other">Other</option>
+            `;
+        } else if (type === "Garden Maintenance") {
+            categorySelect.innerHTML = `
+                <option value="Lawn Care">Lawn Care</option>
+                <option value="Fencing/Boundary Issues">Fencing/Boundary Issues</option>
+                <option value="Garden Other">Other</option>
+            `;
+        } else if (type === "Cleaning Maintenance") {
+            categorySelect.innerHTML = `
+                <option value="Not Cleaned">Not Cleaned</option>
                 <option value="Trash Overflow">Trash Overflow</option>
-                <option value="Cleaning Supplies Issue">Cleaning Supplies Issue</option>
-                <option value="Other Cleaning">Other</option>
+                <option value="Cleaning Other">Other</option>
             `;
-        } else if (type === "Safety") {
+        } else if (type === "Other") {
             categorySelect.innerHTML = `
-                <option value="Injury">Injury</option>
-                <option value="Safety Hazard">Safety Hazard</option>
-                <option value="Unsafe Behavior">Unsafe Behavior</option>
-                <option value="Other Safety">Other</option>
-            `;
-        } else if (type === "Equipment") {
-            categorySelect.innerHTML = `
-                <option value="Broken Equipment">Broken Equipment</option>
-                <option value="Equipment Malfunction">Equipment Malfunction</option>
-                <option value="Misplaced/lost Equipment">Misplaced/lost Equipment</option>
-                <option value="Other Equipment">Other</option>
-            `;
-        } else if (type === "Staff") {
-            categorySelect.innerHTML = `
-                <option value="Behavioral">Behavioral</option>
-                <option value="Harassment/Conflict">Harassment/Conflict</option>
-                <option value="Other Staff">Other</option>
+                <option value="Other">Other</option>
             `;
         }
     }
